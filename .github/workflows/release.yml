@@ -7,28 +7,24 @@ jobs:
       - name: Checkout
         uses: actions/checkout@main
         with:
-          persist-credentials: false
-          fetch-depth: 0
+          lfs: true
+      - name: Checkout LFS
+        run: git lfs checkout
       - name: Get version
         id: version
-        uses: notiz-dev/github-action-json-property@master
-        with: 
-            path: 'update.json'
-            prop_path: 'version'
+        run: |
+          version=$(grep '^version=' module.prop | cut -d '=' -f 2)
+          echo "Version: $version" 
+          echo "version=$version" >> $GITHUB_OUTPUT
       - name: Archive
         run:  |
-          sudo zip -r MIUICamera_sm6225${{steps.version.outputs.prop}}.zip *  
+          sudo zip -r MIUICamera_sm6225_${{steps.version.outputs.version}}.zip *  
       - name: Release
-        uses: meeDamian/github-release@master
+        uses: softprops/action-gh-release@v2
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          tag: ${{steps.version.outputs.prop}}
-          name: ${{steps.version.outputs.prop}}
-          files: MIUICamera_sm6225${{steps.version.outputs.prop}}.zip
-          gzip: false
-          draft: false
-          prerelease: false
-          allow_override: true
+          name: ${{steps.version.outputs.version}}
+          tag_name: ${{steps.version.outputs.version}}
+          files: MIUICamera_sm6225_${{steps.version.outputs.version}}.zip
       - name: Cleanup
         run:  |
-          rm MIUICamera_sm6225${{steps.version.outputs.prop}}.zip
+          rm MIUICamera_sm6225_${{steps.version.outputs.version}}.zip
