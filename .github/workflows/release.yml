@@ -17,19 +17,18 @@ jobs:
             prop_path: 'version'
       - name: Archive
         run:  |
-          sudo zip -r KSU-Template.zip *  
+          sudo zip -r MIUICamera_sm6225${{steps.version.outputs.prop}}.zip *  
       - name: Release
         uses: meeDamian/github-release@master
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           tag: ${{steps.version.outputs.prop}}
           name: ${{steps.version.outputs.prop}}
-          body: Please check [changelog](https://github.com/${{ github.repository }}/blob/${{ github.ref_name }}/CHANGELOG.md) for changes
-          files: KSU-Template.zip
+          files: MIUICamera_sm6225${{steps.version.outputs.prop}}.zip
           gzip: false
           draft: false
           prerelease: false
           allow_override: true
       - name: Cleanup
         run:  |
-          rm KSU-Template.zip
+          rm MIUICamera_sm6225${{steps.version.outputs.prop}}.zip
